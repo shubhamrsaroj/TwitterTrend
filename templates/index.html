@@ -1,0 +1,51 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Twitter Trends</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .trend-item { margin: 10px 0; padding: 10px; border: 1px solid #ddd; }
+            .error { color: red; }
+            .timestamp { color: #666; font-size: 0.9em; }
+        </style>
+    </head>
+    <body>
+        <h1>Twitter Trending Topics</h1>
+        <div id="trends-container">
+            <button onclick="fetchTrends()">Fetch Latest Trends</button>
+            <div id="trends-list"></div>
+        </div>
+        
+        <script>
+        function fetchTrends() {
+            fetch('/fetch-trends')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const container = document.getElementById('trends-list');
+                        container.innerHTML = '';
+                        
+                        const timestamp = new Date(data.data.timestamp).toLocaleString();
+                        container.innerHTML += `<p class="timestamp">Last updated: ${timestamp}</p>`;
+                        
+                        data.data.trends.forEach((trend, index) => {
+                            container.innerHTML += `
+                                <div class="trend-item">
+                                    <strong>${index + 1}.</strong> ${trend}
+                                </div>`;
+                        });
+                    } else {
+                        throw new Error(data.error);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('trends-list').innerHTML = 
+                        `<p class="error">Error: ${error.message}</p>`;
+                });
+        }
+        </script>
+    </body>
+    </html>
+    
+
